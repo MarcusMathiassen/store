@@ -27,10 +27,13 @@ export function createStore(state) {
         const forceUpdate = useReducer(x => x + 1, 0)[1]
         const reducedStateRef = useRef(reducer?.(state))
         useEffect(() => store.subscribe(nextState => {
-            if (reducer && shallowEqual(reducedStateRef.current, reducer(nextState)))
-                return
+            if (reducer) {
+                const nextReducedState = reducer(nextState)
+                if (shallowEqual(reducedStateRef.current, nextReducedState))
+                    return
+                reducedStateRef.current = nextReducedState
+            }
             state = nextState
-            if (reducer) reducedStateRef.current = reducer(state)
             forceUpdate()
         }), [])
         return reducer ? reducedStateRef.current : state
