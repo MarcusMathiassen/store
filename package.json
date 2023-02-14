@@ -1,0 +1,44 @@
+{
+    "name": "@marcm/store",
+    "version": "1.0.0",
+    "description": "store",
+    "author": "Marcus Mathiassen",
+    "license": "MIT",
+    "browser": "dist/index.js",
+    "main": "dist/index.cjs",
+    "module": "dist/index.js",
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "scripts": {
+        "build": "rm -rf dist && rollup -c && npm pack"
+    },
+    "devDependencies": {
+        "@rollup/plugin-terser": "^0.4.0",
+        "rollup": "^2.77.0"
+    },
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MarcusMathiassen/store.git"
+    },
+    "keywords": [
+        "store",
+        "fast",
+        "small"
+    ],
+    "bugs": {
+        "url": "https://github.com/MarcusMathiassen/store/issues"
+    },
+    "homepage": "https://github.com/MarcusMathiassen/store#readme",
+    "dependencies": {
+        "@marcm/shallow-equal": "^1.0.3",
+        "react": "^18.2.0"
+    }
+}
