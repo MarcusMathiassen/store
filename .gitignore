@@ -1,0 +1,11 @@
+node_modules
+react
+package
+.DS_Store
+package-lock.json
+results
+index.js
+dist
+*.tgz
+benchmark/node_modules
+.npmrc
