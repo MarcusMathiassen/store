@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { shallowEqual } from '@marcm/shallow-equal'
 
 function createStoreVanilla(state) {
@@ -19,28 +19,26 @@ function createStoreVanilla(state) {
     return { get, set, subscribe }
 }
 
-export function createStore(state) {
+const defaultSelector = state => state
+export function createStore(initialState) {
     const store = createStoreVanilla()
-    if (typeof state === 'function') state = state(store)
-    store.set(state)
-    function hook(reducer) {
-        const [resolvedState, setState] = useState(reducer ? reducer(state) : state)
-        const reducedStateRef = useRef(resolvedState)
-        useEffect(() => store.subscribe(nextState => {
-            state = nextState
-            let nextReducedState = nextState
-            if (reducer) {
-                nextReducedState = reducer(nextState)
-                if (shallowEqual(reducedStateRef.current, nextReducedState))
-                    return
-                reducedStateRef.current = nextReducedState
-            }
-            setState(nextReducedState)
-        }), [])
-        return resolvedState
+    if (typeof initialState === 'function') initialState = initialState(store.set, store.get)
+    store.set(initialState)
+    const subscriber = (ref, setSelectedState) => store.subscribe(nextState => {
+        const oldState = ref.current.selectedState
+        ref.current.selectedState = ref.current.selector(nextState)
+        if (!shallowEqual(oldState, ref.current.selectedState))
+            setSelectedState(ref.current.selectedState)
+    })
+    const useStore = (selector = defaultSelector) => {
+        const [selectedState, setSelectedState] = useState(() => selector(initialState))
+        const ref = useRef({ selector, selectedState, setSelectedState })
+        ref.current.selector = selector
+        useEffect(() => subscriber(ref, setSelectedState), [])
+        return selectedState
     }
-    hook.set = store.set
-    hook.get = store.get
-    hook.subscribe = store.subscribe
-    return hook
+    useStore.set = store.set
+    useStore.get = store.get
+    useStore.subscribe = store.subscribe
+    return useStore
 }

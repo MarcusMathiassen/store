@@ -1,9 +1,14 @@
-import { createStore } from '@marcm/store'
+
 import './App.css'
 
-const useAudioController = createStore(({ set, get }) => ({
+import { useState, useEffect, useRef, useReducer } from 'react'
+import { shallowEqual } from '@marcm/shallow-equal'
+import { createStore } from './store'
+
+const useAudioController = createStore((set, get) => ({
     set,
     volume: 1,
+    gain: 5,
     timer: null,
     isPlaying: false,
     play: () => {
@@ -22,17 +27,25 @@ const useAudioController = createStore(({ set, get }) => ({
 }))
 
 function AudioPlayer() {
-    const isPlaying = useAudioController(({ isPlaying }) => isPlaying)
+    const isPlaying = useAudioController(({ isPlaying }) => {
+        console.log(isPlaying)
+        return isPlaying
+    })
     return <div>Playing: {!!isPlaying ? 'YES' : 'NO'}</div>
 }
 
-function Volume() {
-    const volume = useAudioController(({ volume }) => volume)
+let i = 0;
+const volumeSelector = ({ volume }) => volume
+const gainSelector = ({ gain }) => gain
+function Volume({ name = 'Hello' }) {
+    ++i;
+    const volume = useAudioController(i&1 ? gainSelector : volumeSelector)
+    console.log(i, volume)
     return <h2>{volume}</h2>
 }
 
 function VolumeSlider() {
-    const volume = useAudioController(({ volume }) => volume)
+    const volume = useAudioController(volumeSelector)
     return (
         <input
             type='range'
@@ -51,29 +64,17 @@ function App() {
     const { play, pause } = useAudioController(({ play, pause }) => ({ play, pause }))
     return (
         <div className='App'>
-            <AudioPlayer />
-            <AudioPlayer />
-            <AudioPlayer />
-            <AudioPlayer />
-            <AudioPlayer />
-            <AudioPlayer />
-            <AudioPlayer />
             <button onClick={play}>PLAY</button>
             <button onClick={pause}>PAUSE</button>
+            <AudioPlayer />
+            <AudioPlayer />
+            <AudioPlayer />
+            <AudioPlayer />
             <Volume />
             <Volume />
             <Volume />
             <Volume />
             <Volume />
-            <Volume />
-            <Volume />
-            <Volume />
-            <Volume />
-            <Volume />
-            <Volume />
-            <VolumeSlider />
-            <VolumeSlider />
-            <VolumeSlider />
             <VolumeSlider />
             <VolumeSlider />
             <VolumeSlider />
