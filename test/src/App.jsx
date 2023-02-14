@@ -1,9 +1,5 @@
-
+import { createStore } from '@marcm/store'
 import './App.css'
-
-import { useState, useEffect, useRef, useReducer } from 'react'
-import { shallowEqual } from '@marcm/shallow-equal'
-import { createStore } from './store'
 
 const useAudioController = createStore((set, get) => ({
     set,

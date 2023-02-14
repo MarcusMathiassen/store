@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@marcm/store": "file:../marcm-store-1.0.0.tgz",
+    "@marcm/store": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
