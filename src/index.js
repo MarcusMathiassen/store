@@ -1,4 +1,4 @@
-import { useRef, useEffect, useReducer } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { shallowEqual } from '@marcm/shallow-equal'
 
 function createStoreVanilla(state) {
@@ -24,20 +24,23 @@ export function createStore(state) {
     if (typeof state === 'function') state = state(store)
     store.set(state)
     function hook(reducer) {
-        const forceUpdate = useReducer(x => x + 1, 0)[1]
-        const reducedStateRef = useRef(reducer?.(state))
+        const [resolvedState, setState] = useState(reducer ? reducer(state) : state)
+        const reducedStateRef = useRef(resolvedState)
         useEffect(() => store.subscribe(nextState => {
+            state = nextState
+            let nextReducedState = nextState
             if (reducer) {
-                const nextReducedState = reducer(nextState)
+                nextReducedState = reducer(nextState)
                 if (shallowEqual(reducedStateRef.current, nextReducedState))
                     return
                 reducedStateRef.current = nextReducedState
             }
-            state = nextState
-            forceUpdate()
+            setState(nextReducedState)
         }), [])
-        return reducer ? reducedStateRef.current : state
+        return resolvedState
     }
-    hook.store = store
+    hook.set = store.set
+    hook.get = store.get
+    hook.subscribe = store.subscribe
     return hook
 }
