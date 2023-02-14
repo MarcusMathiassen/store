@@ -1,6 +1,6 @@
 {
     "name": "@marcm/store",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "store",
     "author": "Marcus Mathiassen",
     "license": "MIT",
@@ -37,8 +37,10 @@
         "url": "https://github.com/MarcusMathiassen/store/issues"
     },
     "homepage": "https://github.com/MarcusMathiassen/store#readme",
+    "peerDependencies": {
+        "react": ">=16.8"
+    },
     "dependencies": {
-        "@marcm/shallow-equal": "^1.0.3",
-        "react": "^16.8.0"
+        "@marcm/shallow-equal": "^1.0.3"
     }
 }
