@@ -17,17 +17,20 @@ export default inputs.reduce((acc, input) => {
             },
             external: ['@marcm/shallow-equal', 'react'],
             plugins: [
-                terser(),
-                /*terser({
+                terser({
                     module: true,
-                    compress: { defaults: false, module: true, hoist_vars: true, join_vars: false, sequences: false },
+                    compress: {
+                        defaults: false,
+                        module: true,
+                        join_vars: true,
+                    },
                     mangle: true,
                     output: {
-                        beautify: false,
+                        beautify: false
                     },
                     parse: {},
-                    rename: {},
-                })*/,
+                    rename: {}
+                })
             ],
         }))
     )

@@ -1,6 +1,6 @@
 # @marcm/store
 
-Fast store (~259 bytes gzipped)
+fast react store (~363 bytes gzipped)
 
 ## Install
 ```bash
@@ -16,8 +16,16 @@ const { createStore } = require('@marcm/store')
 // or
 import { createStore } from '@marcm/store'
 
+// Create your store hook
+const useDebugMode = store(false)
+...
+function DebugModeToggle() {
+    const debugMode = useDebugMode()
+    return <button onClick={e => useDebugMode.set(x => !x)}>{debugMode ? 'ON' : 'OFF'}</button>
+}
 
-// Create it
+// You can also get access to the `set` and `get` functions of the store
+// by passing in a function
 const useAudioController = createStore(({ set, get }) => ({
     set,
     volume: 1,
@@ -38,7 +46,7 @@ const useAudioController = createStore(({ set, get }) => ({
     }
 }))
 
-// Use it (only runs when 'play' and 'pause' change)
+// Use it (will only rerun when `play` or `pause` changes)
 const { play, pause } = useAudioController(({ play, pause }) => ({ play, pause }))
 
 ```

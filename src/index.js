@@ -1,44 +1,32 @@
 import { useRef, useState, useEffect } from 'react'
 import { shallowEqual } from '@marcm/shallow-equal'
-
-function createStoreVanilla(state) {
-    const listeners = new Set()
-    const get = () => state
-    const set = nextState => {
-        if (typeof nextState === 'function') nextState = nextState(state)
-        if (shallowEqual(state, nextState)) return
-        if (typeof nextState === 'object')
-            state = Object.assign({}, state, nextState)
-        else state = nextState
-        for (const cb of listeners) cb(state)
+var objectAssign = Object.assign
+var defaultSelector = state => state
+export var createStore = state => {
+    var cbs = new Set()
+    var get = () => state
+    var set = patch => {
+        if (typeof patch === 'function') patch = patch(state)
+        typeof patch === 'object' ? objectAssign(state, patch) : state = patch
+        for (var cb of cbs) cb(state)
     }
-    const subscribe = listener => {
-        listeners.add(listener)
-        return () => listeners.delete(listener)
+    var sub = cb => (cbs.add(cb), () => cbs.delete(cb))
+    if (typeof state === 'function') state = state(set, get)
+    var _ = (cache, setSelected) =>
+        sub(nextState => {
+            var old = cache.n
+            var next = cache.n = cache.s(nextState)
+            if (!shallowEqual(old, next)) setSelected(next)
+        })
+    var useStore = (selector = defaultSelector) => {
+        var [selected, setSelected] = useState(() => selector(get()))
+        var cache = useRef({ s: selector, n: selected })
+        cache.current.s = selector
+        useEffect(() => _(cache.current, setSelected), [])
+        return selected
     }
-    return { get, set, subscribe }
-}
-
-const defaultSelector = state => state
-export function createStore(initialState) {
-    const store = createStoreVanilla()
-    if (typeof initialState === 'function') initialState = initialState(store.set, store.get)
-    store.set(initialState)
-    const subscriber = (ref, setSelectedState) => store.subscribe(nextState => {
-        const oldState = ref.current.selectedState
-        ref.current.selectedState = ref.current.selector(nextState)
-        if (!shallowEqual(oldState, ref.current.selectedState))
-            setSelectedState(ref.current.selectedState)
-    })
-    const useStore = (selector = defaultSelector) => {
-        const [selectedState, setSelectedState] = useState(() => selector(initialState))
-        const ref = useRef({ selector, selectedState, setSelectedState })
-        ref.current.selector = selector
-        useEffect(() => subscriber(ref, setSelectedState), [])
-        return selectedState
-    }
-    useStore.set = store.set
-    useStore.get = store.get
-    useStore.subscribe = store.subscribe
+    useStore.set = set
+    useStore.get = get
+    useStore.sub = sub
     return useStore
 }

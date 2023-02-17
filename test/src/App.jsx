@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { createStore } from '@marcm/store'
 import './App.css'
 
+const useAge = createStore(28)
+
 const useAudioController = createStore((set, get) => ({
-    set,
     volume: 1,
     gain: 5,
     timer: null,
@@ -23,11 +25,9 @@ const useAudioController = createStore((set, get) => ({
 }))
 
 function AudioPlayer() {
-    const isPlaying = useAudioController(({ isPlaying }) => {
-        console.log(isPlaying)
-        return isPlaying
-    })
-    return <div>Playing: {!!isPlaying ? 'YES' : 'NO'}</div>
+    useEffect(() => useAudioController.sub(console.log), [])
+    const isPlaying = useAudioController(({ isPlaying }) => isPlaying)
+    return <div>Playing: {isPlaying ? 'YES' : 'NO'}</div>
 }
 
 let i = 0;
@@ -36,13 +36,18 @@ const gainSelector = ({ gain }) => gain
 function Volume({ name = 'Hello' }) {
     ++i;
     const volume = useAudioController(i&1 ? gainSelector : volumeSelector)
-    console.log(i, volume)
     return <h2>{volume}</h2>
 }
 
 function VolumeSlider() {
     const volume = useAudioController(volumeSelector)
+    const age = useAge(age => {
+        console.log(age)
+        return age
+    })
+    useAge.set(40)
     return (
+        <>{age}
         <input
             type='range'
             value={volume}
@@ -51,8 +56,10 @@ function VolumeSlider() {
             min={0}
             onChange={e => {
                 useAudioController.set({ volume: e.target.valueAsNumber })
+                useAge.set(age => age + 1)
             }}
         />
+        </>
     )
 }
 
