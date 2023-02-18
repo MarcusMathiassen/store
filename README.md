@@ -26,7 +26,7 @@ function DebugModeToggle() {
 
 // You can also get access to the `set` and `get` functions of the store
 // by passing in a function
-const useAudioController = createStore(({ set, get }) => ({
+const useAudioController = createStore((set, get) => ({
     set,
     volume: 1,
     timer: null,
