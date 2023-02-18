@@ -1,6 +1,6 @@
 {
     "name": "@marcm/store",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Fast, tiny, React store",
     "author": "Marcus Mathiassen",
     "license": "MIT",
