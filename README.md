@@ -1,6 +1,6 @@
 # @marcm/store
 
-fast react store (~363 bytes gzipped)
+fast react store (~354 bytes gzipped)
 
 ## Install
 ```bash
